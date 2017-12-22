@@ -1,0 +1,24 @@
+apiVersion: "config.istio.io/v1alpha2"
+kind: denier
+metadata:
+  name: denyhandler
+spec:
+  status:
+    code: 7
+    message: Not allowed
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: checknothing
+metadata:
+  name: denyrequest
+spec:
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: denytemp
+spec:
+  match: source.labels["function"] != "control" && request.path != "/healthz" && destination.labels["function"] == "thermostat"
+  actions:
+  - handler: denyhandler.denier
+    instances: [ denyrequest.checknothing ]
